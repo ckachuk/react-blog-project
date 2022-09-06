@@ -2,26 +2,23 @@ import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Link } from "react-router-dom";
-
+import BecomeAuthor from '../privilege/BecomeAuthor';
 
 
 
 const NavBarLogged = (props)=>{
-    const isAdmin = props.currentUser.credential.isAdmin;
-    const isAuthor =  props.currentUser.credential.isAuthor; 
+   
+    const isAuthor = props.userCredentials !=null? props.userCredentials.isAuthor: false
 
-    const newCategoryButton = isAdmin? (<Link to='/new-category'><Button sx={{color: 'white'}}>New category</Button></Link>): (null);
-    const newPostButton = isAuthor? (<Link to='/new-post'><Button sx={{color: 'white'}}>New Post</Button></Link>): (null);
-    
-    const becomeAuthorButton = isAuthor? (null) : (<Link to='/become-author'><Button sx={{color: 'white'}}>Become author</Button></Link>);
+    const unpublishButton = isAuthor? (<Link to='/posts/unpublish'><Button sx={{color: 'white'}}>Unpublish</Button></Link>): (<BecomeAuthor currentUser={props.currentUser} userCredentials={props.userCredentials} />);
+
     return(
         <Box>
             <Link to='/categories'><Button sx={{color: 'white'}} >Categories</Button></Link>
-            {becomeAuthorButton}
-            <Link to='/'><Button sx={{color: 'white'}}>Logout</Button></Link>
+            {unpublishButton}
+            <Link to='/'><Button sx={{color: 'white'}} onClick={props.handleLogout}>Logout</Button></Link>
         </Box>
     )
 }
@@ -29,8 +26,8 @@ const NavBarLogged = (props)=>{
 const NavBarWithoutLogin = (props)=>{
     return(
         <Box>
-            <Button color="inherit">Login</Button>
-            <Button color="inherit">Sign up</Button>
+            <Link to='/login'><Button sx={{color: 'white'}}>Login</Button></Link>
+            <Link to='/signup'><Button sx={{color: 'white'}}>Sign up</Button></Link>
         </Box>
     )
 }
@@ -39,11 +36,11 @@ const NavBar = (props)=>{
     return(
         <Box sx={{ flexGrow: 1 }} className='div-navbar'>
             <AppBar position="static">
-                <Toolbar sx={{backgroundColor: 'red'}}>       
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        GitHub projects blog
-                    </Typography>
-                    {props.currentUser? (<NavBarLogged currentUser={props.currentUser}/>): (<NavBarWithoutLogin/>)}
+                <Toolbar sx={{backgroundColor: '#262c50'}}>  
+                    <Box sx={{flexGrow:1}}>
+                        <Link to='/' ><Button sx={{color: 'white'}} >GitHub projects blog</Button></Link>
+                    </Box>         
+                    {props.currentUser? (<NavBarLogged currentUser={props.currentUser} userCredentials={props.userCredentials} handleLogout={props.handleLogout}/>): (<NavBarWithoutLogin/>)}
                 </Toolbar>
             </AppBar>
         </Box>
