@@ -8,7 +8,7 @@ import IsEmpty from '../utils/IsEmpty'
 
 const Comments = (props)=>{
     
-    const comments = props.comments.length !== 0 ? props.comment : false  
+    const comments = props.comments.length !== 0 ? props.comments : false  
 
     return(
         <Box sx={{display: 'flex', justifyContent:'center', flexDirection: 'column' }}  className="divCommentsPost">

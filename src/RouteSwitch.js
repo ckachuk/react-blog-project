@@ -47,7 +47,7 @@ const Toast = Swal.mixin({
 const RouteSwitch = () => {
 
     const [currentUser, setCurrentUser] = useState(JSON.parse(localStorage.getItem('user')));
-    console.log(localStorage.getItem('token'))
+    
     const [userLogin, setUserLogin]= useState({
         username: '',
         password: ''

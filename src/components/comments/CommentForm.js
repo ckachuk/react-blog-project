@@ -6,21 +6,19 @@ import {useState} from "react";
 import Button from '@mui/material/Button';
 import Swal from 'sweetalert2';
 import Error from '../utils/Error';
+import {  useForm, Controller } from "react-hook-form";
 
 const CommentForm = (props)=>{
     const {postId} = useParams()
     
-    const [comment, setComment] = useState({});
     const [isError, setIsError] = useState(null);
+    const { handleSubmit, control } = useForm();
 
-    const handleInput = (e)=>{
-        e.preventDefault();
-        setComment(e.target.value);
-    }
 
-    const handleSubmit = async(e)=>{
-        e.preventDefault()
+    const submit = async(data)=>{
         setIsError(null);
+        const comment = data.comment
+        
         try{
             const response = await fetch(`http://localhost:5000/api/post/${postId}/comment`,{
                 method:'POST',
@@ -36,6 +34,7 @@ const CommentForm = (props)=>{
             });
 
             const data = await response.json();
+            console.log(data)
             if(data.status==='FAILED'){
                 Swal.fire({
                     title: 'Something bad happened',
@@ -52,18 +51,37 @@ const CommentForm = (props)=>{
     return(
         <Box sx={{display: 'flex', justifyContent:'center', m:2}}  className="divCardCommentsPost">
             {isError? (<Error error={isError}/>) : (null)}
-            <Card sx={{display: 'flex', justifyContent:'center', minWidth: 600, flexDirection:'column'}}>
-                <TextField
-                    sx={{m:2}}
-                    id="outlined-multiline-static"
-                    label="Make a comment"
-                    multiline
-                    onChange={handleInput}
-                    rows={4}
-    
-                />
-                <Button  sx={{m:2}} variant='contained' onClick={handleSubmit}>Comment</Button>
-            </Card>
+                <Card sx={{display: 'flex', justifyContent:'center', minWidth: 600, flexDirection:'column'}}>
+
+                <Controller
+                        name="comment"
+                        control={control}
+                        defaultValue=''
+                        rules={{
+                            required: 'The comment does not have to be empty', 
+                        }}
+                        render={({
+                            field: { onChange, value },
+                            fieldState: { error },
+                            formState,
+                        }) => (
+                            <TextField
+                                sx={{m:2}}
+                                onChange={onChange}
+                                error={!!error}
+                                helperText={error ? error.message : null}
+                                id="outlined-multiline-static"
+                                label="Make a comment"
+                                value={value}
+                                multiline
+                                rows={4}
+                            />
+                        )}
+                />               
+                <Button  sx={{m:2}} variant='contained' onClick={handleSubmit(submit)}>Comment</Button>
+               
+                </Card>
+           
         </Box>
     )
 }

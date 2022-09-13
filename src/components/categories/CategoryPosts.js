@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import {useState, useEffect} from "react"
 import Posts from '../posts/Posts';
 import Error from '../utils/Error';
+import IsEmpty from '../utils/IsEmpty';
+import Typography from '@mui/material/Typography';
 
 const CategoryPosts = (props)=>{
     const {categoryId}= useParams()
@@ -30,9 +32,10 @@ const CategoryPosts = (props)=>{
 
 
     return(
-        <Box className="divCategory" sx={{ display: 'flex', justifyContent: 'center'}}>
+        <Box className="divCategory" sx={{ display: 'flex', justifyContent: 'center', flexDirection:'column'}}>
             {isError ? (<Error error={isError}/>) : (null)}
-            <Posts posts={posts}/>
+            <Typography variant="h5"  sx={{ display:'flex', justifyContent:'center', mr:100, mb:4, mt:6 }}>Projects</Typography>
+            {props.posts? <Posts posts={posts}/> : <IsEmpty/>}
         </Box>
     )
 }

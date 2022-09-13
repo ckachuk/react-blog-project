@@ -13,23 +13,15 @@ const Categories = (props)=>{
 
     const [categories, setCategories] = useState([]);
     const [open, setOpen] = useState(false);
-    const [newCategory, setNewCategory]= useState({name: ''})
     const [isError, setIsError] = useState(null);
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-    const handleInputCategory = (e)=>{
-        e.preventDefault();
-        setNewCategory({
-            ...newCategory,
-            [e.target.name]: e.target.value
-        })
-    }
+  
 
-    const handleSubmitCategory = async(e)=>{
-        e.preventDefault();
-        setIsError(null);
+    const submitCategory = async(dataForm)=>{
+        
         try{
             const response = await fetch('http://localhost:5000/api/category',{
                 method: 'POST',
@@ -39,7 +31,7 @@ const Categories = (props)=>{
                     'Authorization' : `Bearer ${localStorage.getItem("token")}`
                 },
                 body: JSON.stringify({
-                    name: newCategory.name,
+                    name: dataForm.category,
                     currentUserid: props.currentUser._id
                 })
             })
@@ -62,7 +54,7 @@ const Categories = (props)=>{
                   })
             }
         }catch(err){
-            setIsError(err);
+            console.log(err);
         }  
     }
     
@@ -88,7 +80,7 @@ const Categories = (props)=>{
         <Box className="divCategories">
             {isError? <Error error={isError}/>: (null)}
             <NewCategoryButton userCredentials={props.userCredentials} handleOpen={handleOpen}/>
-            <NewCategoryModal open={open}  handleClose={handleClose} handleInputCategory={handleInputCategory} handleSubmitCategory={handleSubmitCategory}/>
+            <NewCategoryModal open={open}  handleClose={handleClose} submitCategory={submitCategory}/>
             <Typography variant='h5' sx={{ display: 'flex', justifyContent: 'center', m:4}}>Technologies</Typography>
             {categories !== undefined? categories.map((category)=>{
                 return(<Box sx={{display:'flex', justifyContent:'center'}} key={category._id}>

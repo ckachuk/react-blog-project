@@ -1,11 +1,11 @@
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import Swal from 'sweetalert2';
 import Error from '../utils/Error';
 import {useState} from "react";
+import Fab from '@mui/material/Fab';
 
 const CategoryActions = (props)=>{
 
@@ -69,7 +69,7 @@ const CategoryActions = (props)=>{
                 {isError ? <Error error={isError}/>:(null)}
                 <Card>
                     <CardActions sx={{display: 'flex', justifyContent: 'center'}}>
-                        <Button onClick={handleDelete}><DeleteForeverIcon/></Button>
+                        <Fab onClick={handleDelete} size="small" color="primary" sx={{m:1}}><DeleteForeverIcon/></Fab>
                     </CardActions>  
                 </Card>
             </Box>): (null)}

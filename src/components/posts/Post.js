@@ -32,13 +32,13 @@ const Post = (props)=>{
                 
                 setPost(data.post); 
                 setComments(data.comments)
+                console.log(data)
             }catch(err){
                 setIsError(err);
             }
             
         }
         getPost();
-
     },[postId, comments]);
 
     const dataBody = decodeEntity(post.body);

@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
 import Card from '@mui/material/Card';
@@ -9,6 +8,13 @@ import { Link } from "react-router-dom";
 import Error from '../utils/Error';
 import {useState} from "react";
 import PublishIcon from '@mui/icons-material/Publish';
+import Fab from '@mui/material/Fab';
+
+function decodeEntity(inputStr) {
+    var textarea = document.createElement("textarea");
+    textarea.innerHTML = inputStr;
+    return textarea.value;
+}
 
 const PostActions = (props)=>{
 
@@ -18,6 +24,7 @@ const PostActions = (props)=>{
     const isUnpublish = props.post.publish === false ? true : false;
     const [isError, setIsError] = useState(null);
 
+    console.log(props.post.category)
     const handleDelete = async(e)=>{
         e.preventDefault();
         setIsError(null);
@@ -66,8 +73,12 @@ const PostActions = (props)=>{
         }
     }
     
-    const handlePublish = async(e)=>{
+    const handlePublish = async(e)=>{        
         setIsError(null);
+        const getCategoriesId = props.post.category.map((technology)=>{
+            return technology._id
+        });
+
         const responseSwal = await Swal.fire({
             title: 'Are you sure?',
             icon: 'warning',
@@ -85,10 +96,10 @@ const PostActions = (props)=>{
                     },
                     body: JSON.stringify({
                         title: props.post.title,
-                        body: props.post.body,
+                        body: decodeEntity(props.post.body),
                         currentUserid: props.post.user,
                         date_created: props.post.date_created,
-                        category: props.post.category,
+                        category: getCategoriesId,
                         publish: true
                     })
                 });
@@ -117,9 +128,9 @@ const PostActions = (props)=>{
     }
 
     const urlEdit = `/post/${props.post._id}`
-    const buttonDelete =  isAdmin || isAuthorPost? (<Button onClick={handleDelete}><DeleteForeverIcon/></Button>): (null);
-    const buttonEdit = isAuthorPost ? (<Link to={urlEdit}><Button><EditIcon/></Button></Link>): (null);
-    const buttonPublish = isUnpublish ? (<Button onClick={handlePublish}><PublishIcon/></Button>): (null);
+    const buttonDelete =  isAdmin || isAuthorPost? (<Fab onClick={handleDelete} size="small" color="primary" sx={{m:1}}><DeleteForeverIcon/></Fab>): (null);
+    const buttonEdit = isAuthorPost ? (<Link to={urlEdit}><Fab size="small" color="primary" sx={{m:1}}><EditIcon/></Fab></Link>): (null);
+    const buttonPublish = isUnpublish ? (<Fab onClick={handlePublish} size="small" color="primary" sx={{m:1}}><PublishIcon/></Fab>): (null);
 
     
     return(
@@ -129,8 +140,8 @@ const PostActions = (props)=>{
                 {isError? (<Error error={isError}/>) : (null)}
                 <Card>
                     <CardActions sx={{display: 'flex', justifyContent: 'center'}}>
-                        {buttonDelete}
                         {buttonEdit}
+                        {buttonDelete}
                         {buttonPublish}
                     </CardActions>  
                 </Card>

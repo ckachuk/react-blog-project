@@ -17,8 +17,9 @@ const PostCard = (props)=>{
                         {props.post.category ? props.post.category.map((cat)=>{
                             return <Chip label={cat.name} color="primary" key={cat._id}/>
                         }): (null)}
-                    </Stack>
+                    </Stack>  
                 </CardActions>
+                
             </Card>
         </Box>
     )
