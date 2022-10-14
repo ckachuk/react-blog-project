@@ -6,9 +6,9 @@ import Comment from './Comment'
 import CommentActions from './CommentActions';
 import IsEmpty from '../utils/IsEmpty'
 
-const Comments = (props)=>{
+const Comments = ({comments, userCredentials, currentUser})=>{
     
-    const comments = props.comments.length !== 0 ? props.comments : false  
+    const commentsArray = comments.length !== 0 ? comments : false  
 
     return(
         <Box sx={{display: 'flex', justifyContent:'center', flexDirection: 'column' }}  className="divCommentsPost">
@@ -17,17 +17,17 @@ const Comments = (props)=>{
             </Box>
             <Box sx={{display: 'flex', justifyContent:'center'}}  className="divCardCommentsPost">
                 <Card sx={{display: 'flex', justifyContent:'center', flexDirection:'column', maxWidth: 700}}>
-                    {comments  ? comments.map((comment, index)=>{
+                    {commentsArray  ? commentsArray.map((comment, index)=>{
                         return (
                         <Box sx={{display:'flex', justifyContent:'center'}} key={index}>
                             <Comment comment={comment}/>
-                            <CommentActions userCredentials={props.userCredentials} comment={comment} currentUser={props.currentUser} />
+                            <CommentActions userCredentials={userCredentials} comment={comment} currentUser={currentUser} />
                         </Box>)
                     }): (<IsEmpty/>)}
                     
                 </Card>
             </Box>   
-            {props.currentUser ? (<CommentForm currentUser={props.currentUser}/>):(null)}
+            {currentUser ? (<CommentForm currentUser={currentUser}/>):(null)}
         </Box>
     )
 }

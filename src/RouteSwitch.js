@@ -12,10 +12,10 @@ import Swal from 'sweetalert2';
 import UnpublishPosts from "./components/posts/UnpublishPosts";
 import {useEffect, useState} from "react";
 import jwt_decode from "jwt-decode";
+import {QueryClient, QueryClientProvider } from 'react-query'
 
 
-
-const ProtectedRoute = ({ setCurrentUser, setUserCredentials, currentUser, children }) => {
+const ProtectedRoute = ({  currentUser, children }) => {
     let token = localStorage.getItem('token');
     let decodedToken = jwt_decode(token);
     let currentDate = new Date();
@@ -42,7 +42,7 @@ const Toast = Swal.mixin({
     }
 })
   
-
+const queryClient = new QueryClient()
   
 const RouteSwitch = () => {
 
@@ -141,36 +141,38 @@ const RouteSwitch = () => {
 
     return (
         <Box>
-            <BrowserRouter>
-            <NavBar currentUser={currentUser} userCredentials={userCredentials} handleLogout={handleLogout}/>
-                <Routes>
-                    <Route path="/" element={<Homepage currentUser={currentUser} userCredentials={userCredentials}/>} />
-                    <Route path="login" element={<Login handleInputLogin={handleInputLogin} handleSubmitLogin={handleSubmitLogin} setCurrentUser={setCurrentUser} setUserCredentials={setUserCredentials}/>}/>
-                    <Route path="signup" element={<SignUp/>}/>
-                    <Route path="categories" element={
-                    <ProtectedRoute currentUser={currentUser} >
-                        <Categories currentUser={currentUser} userCredentials={userCredentials}/>
-                    </ProtectedRoute>
-                    }/>
-                    <Route path="categories/:categoryId" element={<CategoryPosts />}/>
-                    <Route path=":postId" element={<Post  currentUser={currentUser}  userCredentials={userCredentials}/>} />
-                    <Route path="post" element={
-                    <ProtectedRoute currentUser={currentUser} >
-                        <PostForm currentUser={currentUser}/>
-                    </ProtectedRoute>
-                    }/>
-                    <Route path="post/:postId" element={
-                    <ProtectedRoute currentUser={currentUser}>
-                        <PostForm currentUser={currentUser}/>
-                    </ProtectedRoute>
-                    }/>
-                    <Route path="posts/unpublish" element={
-                    <ProtectedRoute currentUser={currentUser}>
-                        <UnpublishPosts currentUser={currentUser} userCredentials={userCredentials}/>
-                    </ProtectedRoute>
-                    }/>
-                </Routes>
-            </BrowserRouter>
+            <QueryClientProvider client={queryClient}>
+                <BrowserRouter>
+                <NavBar currentUser={currentUser} userCredentials={userCredentials} handleLogout={handleLogout}/>
+                    <Routes>
+                        <Route path="/" element={<Homepage currentUser={currentUser} userCredentials={userCredentials}/>} />
+                        <Route path="login" element={<Login handleInputLogin={handleInputLogin} handleSubmitLogin={handleSubmitLogin} setCurrentUser={setCurrentUser} setUserCredentials={setUserCredentials}/>}/>
+                        <Route path="signup" element={<SignUp/>}/>
+                        <Route path="categories" element={
+                        <ProtectedRoute currentUser={currentUser} >
+                            <Categories currentUser={currentUser} userCredentials={userCredentials}/>
+                        </ProtectedRoute>
+                        }/>
+                        <Route path="categories/:categoryId" element={<CategoryPosts />}/>
+                        <Route path=":postId" element={<Post  currentUser={currentUser}  userCredentials={userCredentials}/>} />
+                        <Route path="post" element={
+                        <ProtectedRoute currentUser={currentUser} >
+                            <PostForm currentUser={currentUser}/>
+                        </ProtectedRoute>
+                        }/>
+                        <Route path="post/:postId" element={
+                        <ProtectedRoute currentUser={currentUser}>
+                            <PostForm currentUser={currentUser}/>
+                        </ProtectedRoute>
+                        }/>
+                        <Route path="posts/unpublish" element={
+                        <ProtectedRoute currentUser={currentUser}>
+                            <UnpublishPosts currentUser={currentUser} userCredentials={userCredentials}/>
+                        </ProtectedRoute>
+                        }/>
+                    </Routes>
+                </BrowserRouter>
+            </QueryClientProvider>
         </Box>  
     );
 };

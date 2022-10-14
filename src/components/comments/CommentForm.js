@@ -2,55 +2,49 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import { useParams } from "react-router-dom";
 import TextField from '@mui/material/TextField';
-import {useState} from "react";
 import Button from '@mui/material/Button';
 import Swal from 'sweetalert2';
-import Error from '../utils/Error';
 import {  useForm, Controller } from "react-hook-form";
+import {useMutation, useQueryClient } from 'react-query'
+import axios from 'axios';
 
-const CommentForm = (props)=>{
+
+const CommentForm = ({currentUser})=>{
     const {postId} = useParams()
     
-    const [isError, setIsError] = useState(null);
     const { handleSubmit, control } = useForm();
+    const queryClient = useQueryClient();
 
-
-    const submit = async(data)=>{
-        setIsError(null);
-        const comment = data.comment
-        
-        try{
-            const response = await fetch(`http://localhost:5000/api/post/${postId}/comment`,{
-                method:'POST',
-                mode: 'cors',
-                headers:{
-                    'Content-type': 'application/json',
-                    'Authorization' : `Bearer ${localStorage.getItem("token")}`
-                },
-                body: JSON.stringify({
-                    currentUserid: props.currentUser._id,
-                    body: comment
-                })
-            });
-
-            const data = await response.json();
-            console.log(data)
-            if(data.status==='FAILED'){
-                Swal.fire({
-                    title: 'Something bad happened',
-                    text: data.message,
-                    icon:'error'
-                })
+    const postComment = async(comment)=>{
+        return await axios.post(`http://localhost:5000/api/post/${postId}/comment`, comment, {
+            mode: 'cors',
+            headers:{
+                'Content-type': 'application/json',
+                'Authorization' : `Bearer ${localStorage.getItem("token")}`
             }
+        })
+    }
+
+    const postCommentMutation = useMutation(postComment, {
+        onSuccess: ()=>{
+            queryClient.invalidateQueries('comment')
+        },
+        onError: ()=>{
+            Swal.fire({
+                title: 'Something bad happened',
+                icon:'error'
+            })
         }
-        catch(err){
-            setIsError(err);
-        }
+    })
+    const submit = async(data)=>{
+        postCommentMutation.mutate({
+            currentUserid: currentUser._id,
+            body: data.comment
+        })
     }
 
     return(
         <Box sx={{display: 'flex', justifyContent:'center', m:2}}  className="divCardCommentsPost">
-            {isError? (<Error error={isError}/>) : (null)}
                 <Card sx={{display: 'flex', justifyContent:'center', minWidth: 600, flexDirection:'column'}}>
 
                 <Controller

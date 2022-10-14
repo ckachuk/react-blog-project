@@ -5,19 +5,46 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import Swal from 'sweetalert2';
 import { useParams } from "react-router-dom";
-import Error from '../utils/Error';
-import {useState} from "react"
+import {useMutation, useQueryClient } from 'react-query'
+import axios from 'axios';
 
-const CommentActions = (props)=>{
+const CommentActions = ({comment, userCredentials, currentUser})=>{
     const {postId} = useParams()
    
-    const isAdmin = props.userCredentials ? props.userCredentials.isAdmin : false
-    const isAuthorComment = props.currentUser === props.comment.user;
-    const [isError, setIsError] = useState(null);
+    const isAdmin = userCredentials ? userCredentials.isAdmin : false;
+    const isAuthorComment = currentUser._id === comment.user._id;
+    const queryClient = useQueryClient();
+
+    const deleteComment = async()=>{
+        return await axios.delete(`http://localhost:5000/api/post/${postId}/comment/${comment._id}`,
+        {   
+            data: {currentUserid: currentUser._id},
+            mode:'cors',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization' : `Bearer ${localStorage.getItem("token")}`
+            }
+        })
+    }
+
+    const deleteCommentMutation = useMutation(deleteComment, {
+        onSuccess: ()=>{
+            queryClient.invalidateQueries();
+            Swal.fire({
+                title: 'Comment deleted',
+                icon:'success'
+            })
+        },
+        onError: ()=>{
+            Swal.fire({
+                title: 'Something wrong happened',
+                icon:'error'
+            })
+        }
+    })
 
     const handleDelete = async(e)=>{
         e.preventDefault()
-
         const responseSwal = await Swal.fire({
             title: 'Are you sure?',
             icon: 'warning',
@@ -25,50 +52,22 @@ const CommentActions = (props)=>{
         })
 
         if(responseSwal.isConfirmed){
-            setIsError(null)
-            try{
-                const response = await fetch(`http://localhost:5000/api/post/${postId}/comment/${props.comment._id}`,{
-                    method: 'DELETE',
-                    mode:'cors',
-                    headers: {
-                        'Content-type': 'application/json',
-                        'Authorization' : `Bearer ${localStorage.getItem("token")}`
-                    },
-                    body: JSON.stringify({
-                        currentUserid: props.currentUser._id
-                    })
-                });
-
-                const data = await response.json();
-
-                if(data.status ==='OK'){
-                    Swal.fire({
-                        title: 'Comment deleted',
-                        text: data.message,
-                        icon:'success'
-                    })
-                }
-            }catch(err){
-                setIsError(err)
-            }
+           console.log(currentUser._id)
+            deleteCommentMutation.mutate()
         }
-    
     }
 
-   
     return(
         <>
             {isAdmin || isAuthorComment? 
             (<Box className='divPostActions' sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', m:3}}>
-                {isError? (<Error error={isError}/>) : (null)}
                 <Card>
                     <CardActions sx={{display: 'flex', justifyContent: 'center'}}>
                         <Button onClick={handleDelete}><DeleteForeverIcon/></Button>
                     </CardActions>  
                 </Card>
             </Box>): (null)}
-        </>
-        
+        </>     
     )
 }
 

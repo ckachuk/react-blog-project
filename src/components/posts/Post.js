@@ -3,18 +3,22 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { useParams } from "react-router-dom";
-import {useEffect, useState} from "react";
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Comments from '../comments/Comments';
+import {useQuery } from 'react-query'
+import axios from 'axios';
+import CircularProgress from '@mui/material/CircularProgress';
 import Error from '../utils/Error';
 
-const Post = (props)=>{
+const Post = ({currentUser, userCredentials})=>{
     const {postId} = useParams();
 
-    const [post, setPost] = useState({});
-    const [comments, setComments] = useState([]);
-    const [isError, setIsError] = useState(null);
+  
+    const {loading, error, data: dataPost } = useQuery('dataPost', async()=>{
+        const response = await axios.get(`http://localhost:5000/api/post/${postId}`);
+        return response.data;
+    })
 
     function decodeEntity(inputStr) {
         var textarea = document.createElement("textarea");
@@ -22,46 +26,34 @@ const Post = (props)=>{
         return textarea.value;
     }
 
-    useEffect(()=>{
-        const getPost = async()=>{
-            setIsError(null);
-            try{
-                const response = await fetch(`http://localhost:5000/api/post/${postId}`);
-
-                const data = await response.json();
-                
-                setPost(data.post); 
-                setComments(data.comments)
-                console.log(data)
-            }catch(err){
-                setIsError(err);
-            }
-            
-        }
-        getPost();
-    },[postId, comments]);
-
-    const dataBody = decodeEntity(post.body);
+    const dataBody = dataPost ? decodeEntity(dataPost.post.body): (null);
     
     return(
-        <Box sx={{display: 'flex', justifyContent:'center',flexDirection: 'column'}}>
-            {isError? (<Error error={isError}/>) : (null)}
-            <Box className="divCardPost" sx={{display: 'flex', justifyContent:'center'}}>
+        <Box sx={{display: 'flex', justifyContent:'center'}}>
+            {loading? <CircularProgress/>: (null)}
+            {error? <Error error={error}/> : (null)}
+            {dataPost !== undefined? 
+            <Box className="divCardPost" sx={{display: 'flex', justifyContent:'center',flexDirection: 'column'}}>
                 <Card sx={{display: 'flex', justifyContent:'center', minWidth: 800, mt: 5, mb:5}}>
+                    
                     <CardContent sx={{m:4}}>
-                        <Typography variant='h3'>{post.title}</Typography>
+                        
+                        <Typography variant='h3'>{dataPost.post.title}</Typography>
                         <Stack direction="row" spacing={1} sx={{m:2}}>
-                            {post.category ? post.category.map((cat)=>{
+                            {dataPost.post.category ? dataPost.post.category.map((cat)=>{
                                 return <Chip label={cat.name} color="primary" key={cat._id}/>
                             }): (null)}
                         </Stack>
                         <div dangerouslySetInnerHTML={{__html: dataBody}}/>
-                        <Typography variant='body2'>Author: {post.user ? post.user.username: null}</Typography>
-                        <Typography variant='body2'>Date post created: {post.date_created}</Typography>
+                        <Typography variant='body2'>Author: {dataPost.post.user ? dataPost.post.user.username: null}</Typography>
+                        <Typography variant='body2'>Date post created: {dataPost.post.date_created}</Typography>
                     </CardContent>
+                    
                 </Card>     
-            </Box> 
-            <Comments comments={comments} currentUser={props.currentUser}  userCredentials={props.userCredentials}/>
+                <Comments comments={dataPost.comments} currentUser={currentUser}  userCredentials={userCredentials}/>
+            </Box> :(null)}
+            
+            
         </Box>
     )
 }

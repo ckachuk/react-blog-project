@@ -1,91 +1,75 @@
 import Box from '@mui/material/Box';
 import Category from './Category';
 import Typography from '@mui/material/Typography';
-import {useState, useEffect} from "react"
+import {useState} from "react"
 import NewCategoryButton from '../utils/NewCategoryButton'
 import Swal from 'sweetalert2';
 import NewCategoryModal from './NewCategoryModal';
 import IsEmpty from '../utils/IsEmpty';
-import Error from '../utils/Error';
 import CategoryActions from './CategoryActions';
+import Error from '../utils/Error';
+import axios from 'axios';
+import CircularProgress from '@mui/material/CircularProgress';
+import {useQuery,useMutation, useQueryClient } from 'react-query'
 
-const Categories = (props)=>{
+const Categories = ({currentUser, userCredentials})=>{
 
-    const [categories, setCategories] = useState([]);
+    const queryClient = useQueryClient()
     const [open, setOpen] = useState(false);
-    const [isError, setIsError] = useState(null);
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-  
+    const {loading, error, data:dataCategories } = useQuery('dataCategories', async()=>{
+        const response =  await axios.get('http://localhost:5000/api/categories')
+        return response.data
+    })
+
+    const postCategory = async(category)=>{
+        return await axios.post('http://localhost:5000/api/category', category,
+        {
+            mode: 'cors',
+            headers:{
+                'Content-type': 'application/json',
+                'Authorization' : `Bearer ${localStorage.getItem("token")}`
+            }
+        })
+
+    }
+
+    const addCategoryMutation = useMutation(postCategory, {
+        onSuccess:()=>{
+            queryClient.invalidateQueries('dataCategories')
+            Swal.fire({
+                icon: 'success',
+                title: 'The category has been created'
+              })
+        },
+        onError:()=>{
+            Swal.fire({
+                icon: 'error',
+                title: 'Something wrong happened'
+            })
+        }
+        
+    })      
 
     const submitCategory = async(dataForm)=>{
-        
-        try{
-            const response = await fetch('http://localhost:5000/api/category',{
-                method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Content-type': 'application/json',
-                    'Authorization' : `Bearer ${localStorage.getItem("token")}`
-                },
-                body: JSON.stringify({
-                    name: dataForm.category,
-                    currentUserid: props.currentUser._id
-                })
-            })
-            
-            const data = await response.json();
-            handleClose();
-            
-            if(data.status === 'OK'){
-                Swal.fire({
-                    icon: 'success',
-                    title: data.message
-                  }).then((value)=>{
-                    window.location.href = '/categories';
-                  })
-            }
-            else{
-                Swal.fire({
-                    icon: 'error',
-                    title: data.message
-                  })
-            }
-        }catch(err){
-            console.log(err);
-        }  
+        addCategoryMutation.mutate({name: dataForm.category, currentUserid: currentUser._id})
+        handleClose();
     }
-    
-    useEffect(()=>{   
-        const getCategories = async ()=>{
-            setIsError(null);
-            try{
-                const response = await fetch('http://localhost:5000/api/categories');
-
-                const data = await response.json();
-    
-                if(data.status === 'OK'){
-                    setCategories(data.categories)
-                }
-            }catch(err){
-                setIsError(err);
-            }     
-        }
-        getCategories();
-    },[])
 
     return(
         <Box className="divCategories">
-            {isError? <Error error={isError}/>: (null)}
-            <NewCategoryButton userCredentials={props.userCredentials} handleOpen={handleOpen}/>
+            <NewCategoryButton userCredentials={userCredentials} handleOpen={handleOpen}/>
             <NewCategoryModal open={open}  handleClose={handleClose} submitCategory={submitCategory}/>
             <Typography variant='h5' sx={{ display: 'flex', justifyContent: 'center', m:4}}>Technologies</Typography>
-            {categories !== undefined? categories.map((category)=>{
+            {loading? <CircularProgress/>: (null)}
+            {error? <Error error={error}/> : (null)}
+            {dataCategories !== undefined? dataCategories.categories.map((category)=>{
                 return(<Box sx={{display:'flex', justifyContent:'center'}} key={category._id}>
                     <Category category={category}/>
-                    <CategoryActions currentUser={props.currentUser} userCredentials={props.userCredentials} category={category}/>
+                    <CategoryActions currentUser={currentUser} userCredentials={userCredentials} category={category}/>
                     </Box>)
             }) : <IsEmpty />}
         </Box>

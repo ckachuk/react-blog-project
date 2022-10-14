@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import {useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import Swal from 'sweetalert2';
 import { useParams } from "react-router-dom";
 import { Editor } from '@tinymce/tinymce-react';
@@ -11,6 +11,9 @@ import { FormInputText } from '../utils/form-components/FormInputText';
 import {  useForm } from "react-hook-form";
 import { FormInputMultiCheckbox } from '../utils/form-components/FormInputCheckbox';
 import { CardActions } from '@mui/material';
+import {useQuery,useMutation, useQueryClient } from 'react-query'
+import CircularProgress from '@mui/material/CircularProgress';
+import axios from 'axios';
 
 function decodeEntity(inputStr) {
     var textarea = document.createElement("textarea");
@@ -18,21 +21,78 @@ function decodeEntity(inputStr) {
     return textarea.value;
 }
 
-const PostForm = (props)=>{
+const PostForm = ({currentUser})=>{
     const {postId} = useParams();
     const editorRef = useRef(null);
+    const isUpdate = postId !== undefined ?  true: false;
+    const { handleSubmit, control, setValue } = useForm();
+    const queryClient = useQueryClient();
 
     const [loadedTechnology, setLoadedTechnology] = useState([]);
     const [technlogyChecked, setTechnologyChecked] = useState([]);
     const [text, setText] = useState('');
-    const [isError, setIsError] = useState(null);
 
-    const isUpdate = postId !== undefined ?  true: false;
+    const {errorPost, loadingPost} = useQuery('dataPost', async()=>{
+        if(isUpdate){
+            const response = await axios.get(`http://localhost:5000/api/post/${postId}`);
 
-    const { handleSubmit, control, setValue } = useForm();
+            setTechnologyChecked(response.data.post.category)
+            setValue('title', response.data.post.title)
+            setText(decodeEntity(response.data.post.body));     
+            
+            return response.data
+        }
+        else{
+            return;
+        }
+    })
+    
+    
+    const {errorCategory, loadingCategory} = useQuery('dataCategories', async()=>{
+        const response = await axios.get('http://localhost:5000/api/categories');
+        
+        const technologyArray = response.data.categories.map((category, index)=>{
+            return {id: category._id,
+            name: category.name,
+            index: index,
+            check: false}
+        }) 
+        setLoadedTechnology(technologyArray);
+
+        return response.data;
+    })
+
+  
+    const formPost = async(post)=>{
+        const url = isUpdate? `http://localhost:5000/api/post/${postId}` : 'http://localhost:5000/api/post';
+        return await axios.post(url, post, {
+            mode: 'cors',
+            headers:{
+                'Content-type': 'application/json',
+                'Authorization' : `Bearer ${localStorage.getItem("token")}`
+            }
+        }) 
+    } 
+
+    const formPostMutation = useMutation(formPost, {
+        onSuccess: ()=>{
+            queryClient.invalidateQueries();
+            Swal.fire({
+                icon: 'success',
+                title: 'The post has been created'
+            })
+        },
+        onError: ()=>{
+            Swal.fire({
+                icon: 'error',
+                title: 'Something wrong happened'
+            })
+        } 
+    }) 
+
 
     const submit = async({title, technologies})=>{
-        setIsError(null);
+
         const getCategories = loadedTechnology.filter((technology)=>{
             return technologies.includes(technology.index)
         });
@@ -41,98 +101,15 @@ const PostForm = (props)=>{
             return technology.id
         });
 
-        
-        try{
-            const url = isUpdate? `http://localhost:5000/api/post/${postId}` : 'http://localhost:5000/api/post'
-
-            const response = await fetch(url, {
-                    method: 'POST',
-                    mode:'cors',
-                    headers:{
-                        'Content-type': 'application/json',
-                        'Authorization' : `Bearer ${localStorage.getItem("token")}`
-                    },
-                    body: JSON.stringify({
-                        title: title,
-                        body: text,
-                        category: getCategoriesId,
-                        currentUserid: props.currentUser._id 
-                    })
-            })
-           
-            const data = await response.json();
-    
-            if(data.status ==='OK'){
-                Swal.fire({
-                    title: data.message,
-                    icon: 'success'
-                }).then((value)=>{
-                    window.location.href = '/';
-                })
-            }
-            else{
-                Swal.fire({
-                    title: data.message,
-                    icon: 'error'
-                })
-            }
-        }catch(err){
-            setIsError(err)
-        }
-       
+        formPostMutation.mutate({title: title, body: text, category: getCategoriesId, currentUserid: currentUser._id})
     }
-
-    const getPost = async()=>{
-        try{
-            const response = await fetch(`http://localhost:5000/api/post/${postId}`);
-
-            const data = await response.json();
-            
-            if(data.status === 'OK'){
-               return data
-            }
-        }catch(err){
-            setIsError(err);
-        }
-    }
-
-    const getCategories = async()=>{
-        try{
-            const response = await fetch('http://localhost:5000/api/categories');
-
-            const data = await response.json();
-
-            const technologyArray = data.categories.map((category, index)=>{
-                return {id: category._id,
-                name: category.name,
-                index: index,
-                check: false}
-            }) 
-
-            setLoadedTechnology(technologyArray);
-        }catch(err){
-            setIsError(err);
-        }
-    }
-
-
-    useEffect(()=>{
-        setIsError(null);
-
-        getCategories();
-        if(isUpdate){
-           getPost().then((data)=>{
-            setTechnologyChecked(data.post.category)
-            setValue('title', data.post.title)
-            setText(decodeEntity(data.post.body));     
-           })
-        }
-    }, [])
-
 
     return(
         <Box className="divCreatePost" sx={{display:'flex', justifyContent:'center'}}>
-            {isError ? <Error error={isError}/> : (null)}
+            {loadingPost? <CircularProgress/>: (null)}
+            {errorPost? <Error error={errorPost}/> : (null)}
+            {loadingCategory? <CircularProgress/>: (null)}
+            {errorCategory? <Error error={errorCategory}/> : (null)}
             <Card sx={{display:'flex', justifyContent:'center', minWidth:1000, flexDirection:'column', mt:7}}>
                 <Typography variant='h4' sx={{m:2}}>{isUpdate? "Update post" : "Create post"}</Typography>
                     <FormInputText name="title"  control={control} label="Title"/>
