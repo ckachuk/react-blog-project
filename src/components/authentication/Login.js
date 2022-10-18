@@ -9,16 +9,9 @@ import TextField from '@mui/material/TextField';
   
 const Login = (props)=>{
 
-    React.useEffect(()=>{
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        props.setCurrentUser();
-        props.setUserCredentials();
-    }, [])
-   
     return(
         <Box className="divLogin" sx={{ display:'flex', justifyContent:'center'}}>
-            <Card sx={{ minWidth: 400, m: 10}}>
+            <Card sx={{ minWidth: 400, mt: 30}}>
                 <CardContent  sx={{ display:'flex', justifyContent:'center', flexDirection:'column'}}>            
                     <Typography variant="h5" component="div" sx={{ m:1, flexGrow: 1 }}>
                         Login

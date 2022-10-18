@@ -15,15 +15,18 @@ import jwt_decode from "jwt-decode";
 import {QueryClient, QueryClientProvider } from 'react-query'
 
 
-const ProtectedRoute = ({  currentUser, children }) => {
-    let token = localStorage.getItem('token');
-    let decodedToken = jwt_decode(token);
+const ProtectedRoute = ({  currentUser, children}) => {
+    let token = currentUser!==null ? localStorage.getItem('token') : null;
+    let decodedToken = token !== null ? jwt_decode(token): null;
     let currentDate = new Date();
 
     
-    if (!currentUser || decodedToken.exp * 1000 < currentDate.getTime()) {
-        
-      return <Navigate to="/login" replace />;
+
+    if(decodedToken === null){
+        return <Navigate replace to="/login"/>
+    }
+    else if( decodedToken.exp * 1000 < currentDate.getTime()) {
+        return <Navigate to="/login" replace />;
     }
 
     return children;
@@ -64,6 +67,7 @@ const RouteSwitch = () => {
     }
 
     const handleSubmitLogin = async()=>{
+        console.log(`${process.env.REACT_APP_BACKEND_URL}/api/login`)
         try{
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/login`, {
                 method: 'POST',
@@ -149,7 +153,7 @@ const RouteSwitch = () => {
                         <Route path="login" element={<Login handleInputLogin={handleInputLogin} handleSubmitLogin={handleSubmitLogin} setCurrentUser={setCurrentUser} setUserCredentials={setUserCredentials}/>}/>
                         <Route path="signup" element={<SignUp/>}/>
                         <Route path="categories" element={
-                        <ProtectedRoute currentUser={currentUser} >
+                        <ProtectedRoute currentUser={currentUser}>
                             <Categories currentUser={currentUser} userCredentials={userCredentials}/>
                         </ProtectedRoute>
                         }/>
@@ -161,7 +165,7 @@ const RouteSwitch = () => {
                         </ProtectedRoute>
                         }/>
                         <Route path="post/:postId" element={
-                        <ProtectedRoute currentUser={currentUser}>
+                        <ProtectedRoute currentUser={currentUser} >
                             <PostForm currentUser={currentUser}/>
                         </ProtectedRoute>
                         }/>
