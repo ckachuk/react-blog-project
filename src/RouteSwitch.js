@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Homepage from "./Homepage";
 import Box from '@mui/material/Box';
 import NavBar from "./components/navbar/NavBar";
@@ -48,7 +48,7 @@ const Toast = Swal.mixin({
 const queryClient = new QueryClient()
   
 const RouteSwitch = () => {
-
+    const navigate = useNavigate();
     const [currentUser, setCurrentUser] = useState(JSON.parse(localStorage.getItem('user')));
     
     const [userLogin, setUserLogin]= useState({
@@ -117,7 +117,7 @@ const RouteSwitch = () => {
         localStorage.removeItem('user');
         setCurrentUser();
         setUserCredentials();
-        window.location.href = '/';
+        navigate('/login')
     }
 
     
