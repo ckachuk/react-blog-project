@@ -78,7 +78,7 @@ const SignUp = (props)=>{
     return(
         <Box className="divSignUp" sx={{ display:'flex', justifyContent:'center'}}>
             {isError? <Error error={isError}/> : (null)}
-            <Card sx={{ minWidth: 400, m: 10}}>
+            <Card sx={{ minWidth: 400, m: 25}}>
                 <CardContent  sx={{ display:'flex', justifyContent:'center', flexDirection:'column'}}>            
                     <Typography variant="h5" component="div" sx={{ m:1, flexGrow: 1 }}>
                         SignUp
