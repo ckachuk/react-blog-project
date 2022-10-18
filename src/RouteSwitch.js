@@ -149,27 +149,27 @@ const RouteSwitch = () => {
                 <BrowserRouter>
                 <NavBar currentUser={currentUser} userCredentials={userCredentials} handleLogout={handleLogout}/>
                     <Routes>
-                        <Route path="/" element={<Homepage currentUser={currentUser} userCredentials={userCredentials}/>} />
-                        <Route path="login" element={<Login handleInputLogin={handleInputLogin} handleSubmitLogin={handleSubmitLogin} setCurrentUser={setCurrentUser} setUserCredentials={setUserCredentials}/>}/>
-                        <Route path="signup" element={<SignUp/>}/>
-                        <Route path="categories" element={
+                        <Route path="react-blog-project/" element={<Homepage currentUser={currentUser} userCredentials={userCredentials}/>} />
+                        <Route path="react-blog-project/login" element={<Login handleInputLogin={handleInputLogin} handleSubmitLogin={handleSubmitLogin} setCurrentUser={setCurrentUser} setUserCredentials={setUserCredentials}/>}/>
+                        <Route path="react-blog-project/signup" element={<SignUp/>}/>
+                        <Route path="react-blog-project/categories" element={
                         <ProtectedRoute currentUser={currentUser}>
                             <Categories currentUser={currentUser} userCredentials={userCredentials}/>
                         </ProtectedRoute>
                         }/>
-                        <Route path="categories/:categoryId" element={<CategoryPosts />}/>
-                        <Route path=":postId" element={<Post  currentUser={currentUser}  userCredentials={userCredentials}/>} />
-                        <Route path="post" element={
+                        <Route path="react-blog-project/categories/:categoryId" element={<CategoryPosts />}/>
+                        <Route path="react-blog-project/:postId" element={<Post  currentUser={currentUser}  userCredentials={userCredentials}/>} />
+                        <Route path="react-blog-project/post" element={
                         <ProtectedRoute currentUser={currentUser} >
                             <PostForm currentUser={currentUser}/>
                         </ProtectedRoute>
                         }/>
-                        <Route path="post/:postId" element={
+                        <Route path="react-blog-project/post/:postId" element={
                         <ProtectedRoute currentUser={currentUser} >
                             <PostForm currentUser={currentUser}/>
                         </ProtectedRoute>
                         }/>
-                        <Route path="posts/unpublish" element={
+                        <Route path="react-blog-project/posts/unpublish" element={
                         <ProtectedRoute currentUser={currentUser}>
                             <UnpublishPosts currentUser={currentUser} userCredentials={userCredentials}/>
                         </ProtectedRoute>
