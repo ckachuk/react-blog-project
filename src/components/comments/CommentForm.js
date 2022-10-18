@@ -16,7 +16,7 @@ const CommentForm = ({currentUser})=>{
     const queryClient = useQueryClient();
 
     const postComment = async(comment)=>{
-        return await axios.post(`http://localhost:5000/api/post/${postId}/comment`, comment, {
+        return await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/post/${postId}/comment`, comment, {
             mode: 'cors',
             headers:{
                 'Content-type': 'application/json',

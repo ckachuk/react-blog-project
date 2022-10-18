@@ -16,7 +16,7 @@ const CommentActions = ({comment, userCredentials, currentUser})=>{
     const queryClient = useQueryClient();
 
     const deleteComment = async()=>{
-        return await axios.delete(`http://localhost:5000/api/post/${postId}/comment/${comment._id}`,
+        return await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/post/${postId}/comment/${comment._id}`,
         {   
             data: {currentUserid: currentUser._id},
             mode:'cors',

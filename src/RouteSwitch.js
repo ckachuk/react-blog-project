@@ -65,7 +65,7 @@ const RouteSwitch = () => {
 
     const handleSubmitLogin = async()=>{
         try{
-            const response = await fetch('http://localhost:5000/api/login', {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/login`, {
                 method: 'POST',
                 mode: 'cors',
                 headers: {
@@ -122,7 +122,7 @@ const RouteSwitch = () => {
         const getUser = async()=>{
             try{
                 if(currentUser != null ){
-                    const response = await fetch(`http://localhost:5000/api/user/${currentUser._id}`);
+                    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${currentUser._id}`);
     
                     const data = await response.json();
                     setUserCredentials({

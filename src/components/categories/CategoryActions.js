@@ -14,7 +14,7 @@ const CategoryActions = ({currentUser, userCredentials, category})=>{
     const isAdmin = userCredentials? userCredentials.isAdmin: false;
 
     const deleteCategory = async()=>{
-        return await axios.delete(`http://localhost:5000/api/category/${category._id}`,{
+        return await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/category/${category._id}`,{
             mode:'cors',
             headers:{
                 'Content-type': 'application/json',

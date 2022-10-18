@@ -21,12 +21,12 @@ const Categories = ({currentUser, userCredentials})=>{
     const handleClose = () => setOpen(false);
 
     const {loading, error, data:dataCategories } = useQuery('dataCategories', async()=>{
-        const response =  await axios.get('http://localhost:5000/api/categories')
+        const response =  await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/categories`)
         return response.data
     })
 
     const postCategory = async(category)=>{
-        return await axios.post('http://localhost:5000/api/category', category,
+        return await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/category`, category,
         {
             mode: 'cors',
             headers:{

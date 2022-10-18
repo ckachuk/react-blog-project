@@ -12,7 +12,7 @@ const CategoryPosts = ()=>{
     const {categoryId}= useParams()
 
     const {loading, error, data: dataPosts} = useQuery('posts', async()=>{
-        const response = await axios.get(`http://localhost:5000/api/category/${categoryId}`)
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/category/${categoryId}`)
         return response.data
     })
 

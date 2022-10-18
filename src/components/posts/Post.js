@@ -16,7 +16,7 @@ const Post = ({currentUser, userCredentials})=>{
 
   
     const {loading, error, data: dataPost } = useQuery('dataPost', async()=>{
-        const response = await axios.get(`http://localhost:5000/api/post/${postId}`);
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/post/${postId}`);
         return response.data;
     })
 

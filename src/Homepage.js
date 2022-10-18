@@ -8,7 +8,7 @@ function Homepage(props) {
 
   useEffect(()=>{
     const getPosts = async()=>{
-      const response = await fetch('http://localhost:5000/api/posts/published');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/posts/published`);
 
       const data = await response.json();
       

@@ -26,7 +26,7 @@ const PostActions = ({currentUser, userCredentials, post})=>{
     const isUnpublish = post.publish === false ? true : false;
     
     const postPublish = async(data)=>{
-        return await axios.post(`http://localhost:5000/api/post/${post._id}`, data, {
+        return await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/post/${post._id}`, data, {
             mode: 'cors',
             headers: {
                 'Content-type': 'application/json',
@@ -55,7 +55,7 @@ const PostActions = ({currentUser, userCredentials, post})=>{
 
 
     const deletePost = async()=>{
-        return await axios.delete(`http://localhost:5000/api/post/${post._id}`,{
+        return await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/post/${post._id}`,{
             mode:'cors',
             headers: {
                 'Content-type': 'application/json',

@@ -24,7 +24,7 @@ const BecomeAuthor = ({currentUser, userCredentials})=>{
     const handleClose = () => setOpen(false);
 
     const postBecomeAuthor = async(key)=>{
-        return await axios.post('http://localhost:5000/api/privilege/author', key,{
+        return await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/privilege/author`, key,{
             mode: 'cors',
             headers: {
                 'Content-type': 'application/json',

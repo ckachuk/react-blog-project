@@ -34,7 +34,7 @@ const PostForm = ({currentUser})=>{
 
     const {errorPost, loadingPost} = useQuery('dataPost', async()=>{
         if(isUpdate){
-            const response = await axios.get(`http://localhost:5000/api/post/${postId}`);
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/post/${postId}`);
 
             setTechnologyChecked(response.data.post.category)
             setValue('title', response.data.post.title)
@@ -49,7 +49,7 @@ const PostForm = ({currentUser})=>{
     
     
     const {errorCategory, loadingCategory} = useQuery('dataCategories', async()=>{
-        const response = await axios.get('http://localhost:5000/api/categories');
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/categories`);
         
         const technologyArray = response.data.categories.map((category, index)=>{
             return {id: category._id,
@@ -64,7 +64,7 @@ const PostForm = ({currentUser})=>{
 
   
     const formPost = async(post)=>{
-        const url = isUpdate? `http://localhost:5000/api/post/${postId}` : 'http://localhost:5000/api/post';
+        const url = isUpdate? `${process.env.REACT_APP_BACKEND_URL}/api/post/${postId}` : `${process.env.REACT_APP_BACKEND_URL}/api/post`;
         return await axios.post(url, post, {
             mode: 'cors',
             headers:{

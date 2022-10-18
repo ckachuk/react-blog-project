@@ -10,7 +10,7 @@ import NewPostButton from '../utils/NewPostButton'
 const UnpublishPosts = ({currentUser, userCredentials})=>{
     
     const {loading, error, data: unpublishPosts} = useQuery('unpublishPosts', async()=>{
-        const response = await axios.get(`http://localhost:5000/api/posts/unpublished/${currentUser._id}`,{
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/posts/unpublished/${currentUser._id}`,{
             mode: 'cors',
             headers:{
               'Content-type': 'application/json',
