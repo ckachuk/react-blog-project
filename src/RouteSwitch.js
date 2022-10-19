@@ -92,7 +92,7 @@ const RouteSwitch = () => {
                     localStorage.setItem('token', data['token']);
                     localStorage.setItem('user', JSON.stringify(data['user']));
                     setCurrentUser(JSON.parse(localStorage.getItem('user')));
-                    return navigate('react-blog-project/')
+                    return navigate('/')
                 })                
                 
             }else{
@@ -117,7 +117,7 @@ const RouteSwitch = () => {
         localStorage.removeItem('user');
         setCurrentUser();
         setUserCredentials();
-        return navigate('react-blog-project/')
+        return navigate('/')
     }
 
     
