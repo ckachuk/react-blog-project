@@ -148,27 +148,27 @@ const RouteSwitch = () => {
             <QueryClientProvider client={queryClient}>
                 <NavBar currentUser={currentUser} userCredentials={userCredentials} handleLogout={handleLogout}/>
                     <Routes>
-                        <Route path="/" element={<Homepage currentUser={currentUser} userCredentials={userCredentials}/>} />
-                        <Route path="/login" element={<Login handleInputLogin={handleInputLogin} handleSubmitLogin={handleSubmitLogin} setCurrentUser={setCurrentUser} setUserCredentials={setUserCredentials}/>}/>
-                        <Route path="/signup" element={<SignUp/>}/>
-                        <Route path="/categories" element={
+                        <Route exact path="/" element={<Homepage currentUser={currentUser} userCredentials={userCredentials}/>} />
+                        <Route exact path="login" element={<Login handleInputLogin={handleInputLogin} handleSubmitLogin={handleSubmitLogin} setCurrentUser={setCurrentUser} setUserCredentials={setUserCredentials}/>}/>
+                        <Route exact path="/signup" element={<SignUp/>}/>
+                        <Route exact path="/categories" element={
                         <ProtectedRoute currentUser={currentUser}>
                             <Categories currentUser={currentUser} userCredentials={userCredentials}/>
                         </ProtectedRoute>
                         }/>
-                        <Route path="/categories/:categoryId" element={<CategoryPosts />}/>
-                        <Route path="/:postId" element={<Post  currentUser={currentUser}  userCredentials={userCredentials}/>} />
-                        <Route path="/post" element={
+                        <Route exact path="/categories/:categoryId" element={<CategoryPosts />}/>
+                        <Route exact path="/:postId" element={<Post  currentUser={currentUser}  userCredentials={userCredentials}/>} />
+                        <Route exact path="/post" element={
                         <ProtectedRoute currentUser={currentUser} >
                             <PostForm currentUser={currentUser}/>
                         </ProtectedRoute>
                         }/>
-                        <Route path="/post/:postId" element={
+                        <Route exact path="/post/:postId" element={
                         <ProtectedRoute currentUser={currentUser} >
                             <PostForm currentUser={currentUser}/>
                         </ProtectedRoute>
                         }/>
-                        <Route path="/posts/unpublish" element={
+                        <Route exact path="/posts/unpublish" element={
                         <ProtectedRoute currentUser={currentUser}>
                             <UnpublishPosts currentUser={currentUser} userCredentials={userCredentials}/>
                         </ProtectedRoute>
