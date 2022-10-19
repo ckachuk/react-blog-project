@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import {  Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Homepage from "./Homepage";
 import Box from '@mui/material/Box';
 import NavBar from "./components/navbar/NavBar";
@@ -92,7 +92,7 @@ const RouteSwitch = () => {
                     localStorage.setItem('token', data['token']);
                     localStorage.setItem('user', JSON.stringify(data['user']));
                     setCurrentUser(JSON.parse(localStorage.getItem('user')));
-                    window.location.href = '/';
+                    return navigate('react-blog-project/')
                 })                
                 
             }else{
@@ -117,7 +117,7 @@ const RouteSwitch = () => {
         localStorage.removeItem('user');
         setCurrentUser();
         setUserCredentials();
-        navigate('/login')
+        return navigate('react-blog-project/')
     }
 
     
@@ -146,36 +146,34 @@ const RouteSwitch = () => {
     return (
         <Box>
             <QueryClientProvider client={queryClient}>
-                <BrowserRouter>
                 <NavBar currentUser={currentUser} userCredentials={userCredentials} handleLogout={handleLogout}/>
                     <Routes>
-                        <Route path="react-blog-project/" element={<Homepage currentUser={currentUser} userCredentials={userCredentials}/>} />
-                        <Route path="react-blog-project/login" element={<Login handleInputLogin={handleInputLogin} handleSubmitLogin={handleSubmitLogin} setCurrentUser={setCurrentUser} setUserCredentials={setUserCredentials}/>}/>
-                        <Route path="react-blog-project/signup" element={<SignUp/>}/>
-                        <Route path="react-blog-project/categories" element={
+                        <Route path="/" element={<Homepage currentUser={currentUser} userCredentials={userCredentials}/>} />
+                        <Route path="/login" element={<Login handleInputLogin={handleInputLogin} handleSubmitLogin={handleSubmitLogin} setCurrentUser={setCurrentUser} setUserCredentials={setUserCredentials}/>}/>
+                        <Route path="/signup" element={<SignUp/>}/>
+                        <Route path="/categories" element={
                         <ProtectedRoute currentUser={currentUser}>
                             <Categories currentUser={currentUser} userCredentials={userCredentials}/>
                         </ProtectedRoute>
                         }/>
-                        <Route path="react-blog-project/categories/:categoryId" element={<CategoryPosts />}/>
-                        <Route path="react-blog-project/:postId" element={<Post  currentUser={currentUser}  userCredentials={userCredentials}/>} />
-                        <Route path="react-blog-project/post" element={
+                        <Route path="/categories/:categoryId" element={<CategoryPosts />}/>
+                        <Route path="/:postId" element={<Post  currentUser={currentUser}  userCredentials={userCredentials}/>} />
+                        <Route path="/post" element={
                         <ProtectedRoute currentUser={currentUser} >
                             <PostForm currentUser={currentUser}/>
                         </ProtectedRoute>
                         }/>
-                        <Route path="react-blog-project/post/:postId" element={
+                        <Route path="/post/:postId" element={
                         <ProtectedRoute currentUser={currentUser} >
                             <PostForm currentUser={currentUser}/>
                         </ProtectedRoute>
                         }/>
-                        <Route path="react-blog-project/posts/unpublish" element={
+                        <Route path="/posts/unpublish" element={
                         <ProtectedRoute currentUser={currentUser}>
                             <UnpublishPosts currentUser={currentUser} userCredentials={userCredentials}/>
                         </ProtectedRoute>
                         }/>
                     </Routes>
-                </BrowserRouter>
             </QueryClientProvider>
         </Box>  
     );

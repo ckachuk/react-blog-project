@@ -11,12 +11,12 @@ import { FormInputText } from '../utils/form-components/FormInputText';
 import { useForm } from "react-hook-form";
 import axios from 'axios';
 import {useMutation, useQueryClient } from 'react-query'
-
+import {  useNavigate } from "react-router-dom";
 
 
 const BecomeAuthor = ({currentUser, userCredentials})=>{
     const queryClient = useQueryClient();
-
+    const navigate = useNavigate()
     const {control, handleSubmit} = useForm()
     const [open, setOpen] = useState(false);
 
@@ -47,7 +47,7 @@ const BecomeAuthor = ({currentUser, userCredentials})=>{
                     title: 'You became author',
                     icon: 'success'
                 }).then((value)=>{
-                    window.location.href = '/';
+                    navigate('/')
                 })
             }
             

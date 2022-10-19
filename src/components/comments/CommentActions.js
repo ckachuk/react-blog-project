@@ -52,7 +52,6 @@ const CommentActions = ({comment, userCredentials, currentUser})=>{
         })
 
         if(responseSwal.isConfirmed){
-           console.log(currentUser._id)
             deleteCommentMutation.mutate()
         }
     }

@@ -9,9 +9,11 @@ import TextField from '@mui/material/TextField';
 import Swal from 'sweetalert2';
 import {useState} from "react";
 import Error from '../utils/Error';
+import {  useNavigate } from "react-router-dom";
 
 const SignUp = (props)=>{
 
+    const navigate = useNavigate();
     const [newUser, setNewUser] = useState({
         username: '',
         password: '',
@@ -52,7 +54,7 @@ const SignUp = (props)=>{
                         text: 'User has been created',
                         icon: 'success'
                     }).then((value)=>{
-                        window.location.href = '/';
+                        return navigate('/login')
                     })   
                 }
                 else{

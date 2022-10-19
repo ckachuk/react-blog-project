@@ -9,6 +9,8 @@ import PublishIcon from '@mui/icons-material/Publish';
 import Fab from '@mui/material/Fab';
 import {useMutation, useQueryClient } from 'react-query'
 import axios from 'axios';
+import {  useNavigate } from "react-router-dom";
+
 
 function decodeEntity(inputStr) {
     var textarea = document.createElement("textarea");
@@ -18,7 +20,7 @@ function decodeEntity(inputStr) {
 
 
 const PostActions = ({currentUser, userCredentials, post})=>{
-
+    const navigate = useNavigate()
     const queryClient = useQueryClient();
     const currentUserid = currentUser != null ? currentUser._id : false;
     const isAdmin = userCredentials? userCredentials.isAdmin: false;
@@ -71,7 +73,7 @@ const PostActions = ({currentUser, userCredentials, post})=>{
                 message: 'The post has been deleted',
                 icon: 'success'
             }).then((value)=>{
-                isUnpublish ? window.location.href = '/posts/unpublish' : window.location.href = '/'    
+                isUnpublish ?  navigate('/posts/unpublish') :  navigate('/')    
             })
         },
         onError: ()=>{
